@@ -3,6 +3,8 @@ import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Dispatch, SetStateAction, useState } from 'react';
+import ButtonGroup from './ButtonGroup';
+import { useRouter } from 'next/router';
 
 type MenuItemsProps = {
   isMobile?: boolean;
@@ -41,6 +43,7 @@ const MenuItems = ({ isMobile = false, active, setActive }: MenuItemsProps) => {
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
   const [active, setActive] = useState('Explore NFTs');
+  const router = useRouter();
 
   return (
     <nav className={'flexBetween w-full fixed z-10 p-4 flex-row border-b dark:bg-nft-dark bg-white dark:border-nft-black-1 border-nft-gray-1'}>
@@ -70,9 +73,10 @@ const Navbar = () => {
       </div>
 
       <div className={'md:hidden flex'}>
-        <ul className={'list-none flexCenter flex-row'}>
-          <MenuItems active={active} setActive={setActive} />
-        </ul>
+        <MenuItems active={active} setActive={setActive} />
+        <div className={'ml-4'}>
+          <ButtonGroup setActive={setActive} router={router} />
+        </div>
       </div>
     </nav>
   );
