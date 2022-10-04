@@ -1,6 +1,6 @@
 import images from '../assets';
 import type { NextPage } from 'next';
-import { Banner, CreatorCard } from '../components';
+import { Banner, CreatorCard, NFTCard } from '../components';
 import { useEffect, useRef, useState } from 'react';
 import Image, { StaticImageData } from 'next/image';
 import { makeId } from '../utils/makeId';
@@ -77,11 +77,39 @@ const Home: NextPage = () => {
                     <Image src={images.left} layout={'fill'} objectFit={'contain'} alt={'Left arrow'} className={theme === 'light'? 'filter invert' : ''} />
                   </div>
                   <div className={'absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer right-0'} onClick={() => handleScroll('right')}>
-                    <Image src={images.right} layout={'fill'} objectFit={'contain'} alt={'Left arrow'} className={theme === 'light'? 'filter invert' : ''} />
+                    <Image src={images.right} layout={'fill'} objectFit={'contain'} alt={'Right arrow'} className={theme === 'light'? 'filter invert' : ''} />
                   </div>
                 </>
               )}
             </div>
+          </div>
+        </div>
+
+        <div className={'mt-10'}>
+          <div className={'flexBetween mx-4 xs:mx-0 minlg:mx-8 sm:flex-col sm:items-start'}>
+            <h1 className={'flex-1 before:first:font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 sn:mb-4'}>Hot bids</h1>
+            <div>SearchBar</div>
+          </div>
+          <div className={'mt-3 w-full flex flex-wrap justify-start md:justify-center'}>
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => {
+              //@ts-ignore
+              const imageNFT: StaticImageData = images[`nft${item}`];
+
+              return (
+                <NFTCard
+                  key={`nft-${item}`}
+                  nft={{
+                    index: item,
+                    name: `Nifty NFT ${item}`,
+                    seller: `0x${makeId(3)}...${makeId(4)}`,
+                    owner: `0x${makeId(3)}...${makeId(4)}`,
+                    description: 'Cool NFT on sale',
+                    image: imageNFT,
+                    price: Number((10 - item * Math.random()).toFixed(2))
+                  }}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
