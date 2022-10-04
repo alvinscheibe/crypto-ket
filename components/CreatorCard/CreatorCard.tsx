@@ -1,5 +1,6 @@
 import images from '../../assets';
 import Image, { StaticImageData } from 'next/image';
+import { useEffect, useState } from 'react';
 
 type CreatorCardProps = {
   rank: number;
@@ -9,6 +10,14 @@ type CreatorCardProps = {
 }
 
 const CreatorCard = ({ rank, image, name, eths }: CreatorCardProps) => {
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+  if (!hydrated) {
+    return null;
+  }
+
   return (
     <div className={'min-w-190 minlg:min-w-240 dark:bg-nft-black-3 bg-white border dark:border-nft-black-3 border-nft-gray-1 rounded-3xl flex flex-col p-4 m-4'}>
       <div className={'w-8 h-8 minlg:w-10 minlg:h-10 bg-nft-red-violet flexCenter rounded-full'}>

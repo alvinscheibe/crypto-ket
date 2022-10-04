@@ -1,6 +1,7 @@
 import images from '../../assets';
 import Link from 'next/link';
 import Image, { StaticImageData } from 'next/image';
+import { useEffect, useState } from 'react';
 
 type NFTCardProps = {
   nft: {
@@ -15,6 +16,14 @@ type NFTCardProps = {
 }
 
 const NFTCard = ({ nft }: NFTCardProps) => {
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+  if (!hydrated) {
+    return null;
+  }
+
   return (
     <Link href={{
       pathname: '/nft-details', query: {
