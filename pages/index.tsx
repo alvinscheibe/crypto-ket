@@ -1,6 +1,6 @@
 import images from '../assets';
 import type { NextPage } from 'next';
-import { Banner, CreatorCard, NFTCard } from '../components';
+import { Banner, CreatorCard, Heading, NFTCard } from '../components';
 import { useEffect, useRef, useState } from 'react';
 import Image, { StaticImageData } from 'next/image';
 import { makeId } from '../utils/makeId';
@@ -54,7 +54,7 @@ const Home: NextPage = () => {
         />
 
         <div className={''}>
-          <h1 className={'font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0'}>Best creators</h1>
+          <Heading title={'Best creators'} />
           <div className={'relative flex-1 max-w-full flex mt-3'} ref={parentRef}>
             <div className={'flex flex-row w-max overflow-x-scroll no-scrollbar select-none'} ref={scrollRef}>
               {[6, 7, 8, 9, 10].map((index) => {
@@ -87,7 +87,7 @@ const Home: NextPage = () => {
 
         <div className={'mt-10'}>
           <div className={'flexBetween mx-4 xs:mx-0 minlg:mx-8 sm:flex-col sm:items-start'}>
-            <h1 className={'flex-1 before:first:font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 sn:mb-4'}>Hot bids</h1>
+            <h1 className={'flex-1 before:first:font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 sm:mb-4'}>Hot bids</h1>
             <div>SearchBar</div>
           </div>
           <div className={'mt-3 w-full flex flex-wrap justify-start md:justify-center'}>
