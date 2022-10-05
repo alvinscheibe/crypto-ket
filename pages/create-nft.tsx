@@ -1,13 +1,18 @@
 import { NextPage } from 'next';
 import images from '../assets';
 import { useTheme } from 'next-themes';
-import { useCallback, useMemo, useState } from 'react';
-import { Heading } from '../components';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Button, Heading, Input } from '../components';
 import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 
 const CreateNft: NextPage = () => {
   const [fileUrl, setFileUrl] = useState(null);
+  const [formInput, setFormInput] = useState({
+    price: '',
+    name: '',
+    description: ''
+  })
   const { theme } = useTheme();
 
   const onDrop = useCallback(() => {
@@ -66,6 +71,29 @@ const CreateNft: NextPage = () => {
               </aside>
             )}
           </div>
+        </div>
+
+        <Input
+          type={'input'}
+          title={'Name'}
+          placeholder={'NFT name'}
+          handleClick={(event) => setFormInput({...formInput, name: event.target.value})}
+        />
+        <Input
+          type={'textarea'}
+          title={'Description'}
+          placeholder={'NFT description'}
+          handleClick={(event) => setFormInput({...formInput, description: event.target.value})}
+        />
+        <Input
+          type={'number'}
+          title={'Price'}
+          placeholder={'NFT price'}
+          handleClick={(event) => setFormInput({...formInput, price: event.target.value})}
+        />
+
+        <div className={'mt-7 w-full flex justify-end'}>
+          <Button btnName={'Create NFT'} classStyles={'rounded-xl'} handleClick={() => {}} />
         </div>
       </div>
     </div>
