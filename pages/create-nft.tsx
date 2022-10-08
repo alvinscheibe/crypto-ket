@@ -1,22 +1,29 @@
 import { NextPage } from 'next';
 import images from '../assets';
 import { useTheme } from 'next-themes';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { Button, Heading, Input } from '../components';
-import { useDropzone } from 'react-dropzone';
+import { useDropzone, Accept } from 'react-dropzone';
 import Image from 'next/image';
+import { NFTContext } from '../context/NFTContext';
 
 const CreateNft: NextPage = () => {
-  const [fileUrl, setFileUrl] = useState(null);
+  const [fileUrl, setFileUrl] = useState('');
   const [formInput, setFormInput] = useState({
     price: '',
     name: '',
     description: ''
   })
   const { theme } = useTheme();
+  const { uploadToIPFS } = useContext(NFTContext);
 
-  const onDrop = useCallback(() => {
-    // Upload image to the IPFS
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    const url = await uploadToIPFS(acceptedFiles[0]);
+
+    console.log(url);
+
+    if (url !== undefined)
+      setFileUrl(url);
   }, []);
 
   const {
@@ -66,7 +73,7 @@ const CreateNft: NextPage = () => {
             {fileUrl && (
               <aside>
                 <div className={''}>
-                  <Image src={fileUrl} alt={'Asset file'} />
+                  <Image src={fileUrl} alt={'Asset file'} layout={'fill'} />
                 </div>
               </aside>
             )}
