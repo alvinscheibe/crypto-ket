@@ -11,6 +11,8 @@ type CreatorCardProps = {
 }
 
 const CreatorCard = ({ rank, image, name, eths }: CreatorCardProps) => {
+  const { nftCurrency } = useContext(NFTContext);
+
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
     setHydrated(true);
@@ -18,8 +20,6 @@ const CreatorCard = ({ rank, image, name, eths }: CreatorCardProps) => {
   if (!hydrated) {
     return null;
   }
-
-  const { nftCurrency } = useContext(NFTContext);
 
   return (
     <div className={'min-w-190 minlg:min-w-240 dark:bg-nft-black-3 bg-white border dark:border-nft-black-3 border-nft-gray-1 rounded-3xl flex flex-col p-4 m-4'}>

@@ -17,6 +17,8 @@ type NFTCardProps = {
 }
 
 const NFTCard = ({ nft }: NFTCardProps) => {
+  const { nftCurrency } = useContext(NFTContext);
+
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
     setHydrated(true);
@@ -24,8 +26,6 @@ const NFTCard = ({ nft }: NFTCardProps) => {
   if (!hydrated) {
     return null;
   }
-
-  const { nftCurrency } = useContext(NFTContext);
 
   return (
     <Link href={{

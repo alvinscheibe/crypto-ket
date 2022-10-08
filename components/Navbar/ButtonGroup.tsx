@@ -1,6 +1,7 @@
 import { Button } from '../index';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import { NextRouter } from 'next/router';
+import { NFTContext } from '../../context/NFTContext';
 
 type ButtonGroupProps = {
   setActive: Dispatch<SetStateAction<string>>;
@@ -8,15 +9,15 @@ type ButtonGroupProps = {
 }
 
 const ButtonGroup = ({ setActive, router }: ButtonGroupProps) => {
-  const hasConnected = false;
+  const { connectWallet, currentAccount } = useContext(NFTContext);
 
-  return hasConnected? (
+  return currentAccount? (
     <Button classStyles={'mx-2 rounded-xl'} btnName={'Create'} handleClick={() => {
       setActive('');
       router.push('/create-nft');
     }} />
   ) : (
-    <Button classStyles={'mx-2 rounded-xl'} btnName={'Connect'} handleClick={() => {}} />
+    <Button classStyles={'mx-2 rounded-xl'} btnName={'Connect'} handleClick={connectWallet} />
   );
 };
 
