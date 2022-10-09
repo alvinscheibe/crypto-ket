@@ -3,9 +3,10 @@ import images from '../assets';
 import { useTheme } from 'next-themes';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { Button, Heading, Input } from '../components';
-import { useDropzone, Accept } from 'react-dropzone';
+import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 import { NFTContext } from '../context/NFTContext';
+import { useRouter } from 'next/router';
 
 const CreateNft: NextPage = () => {
   const [fileUrl, setFileUrl] = useState('');
@@ -15,12 +16,11 @@ const CreateNft: NextPage = () => {
     description: ''
   })
   const { theme } = useTheme();
-  const { uploadToIPFS } = useContext(NFTContext);
+  const { uploadToIPFS, createNFT } = useContext(NFTContext);
+  const router = useRouter();
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const url = await uploadToIPFS(acceptedFiles[0]);
-
-    console.log(url);
 
     if (url !== undefined)
       setFileUrl(url);
@@ -73,7 +73,7 @@ const CreateNft: NextPage = () => {
             {fileUrl && (
               <aside>
                 <div className={''}>
-                  <Image src={fileUrl} alt={'Asset file'} layout={'fill'} />
+                  <Image src={fileUrl} alt={'Asset file'} width={100} height={100} />
                 </div>
               </aside>
             )}
@@ -100,7 +100,11 @@ const CreateNft: NextPage = () => {
         />
 
         <div className={'mt-7 w-full flex justify-end'}>
-          <Button btnName={'Create NFT'} classStyles={'rounded-xl'} handleClick={() => {}} />
+          <Button
+            btnName={'Create NFT'}
+            classStyles={'rounded-xl'}
+            handleClick={() => createNFT(formInput, fileUrl, router)}
+          />
         </div>
       </div>
     </div>
