@@ -7,7 +7,6 @@ import { MarketAddress, MarketAddressABI } from './constants';
 import { Signer } from '@ethersproject/abstract-signer';
 import { Provider } from '@ethersproject/abstract-provider';
 import axios from 'axios';
-import { BigNumber } from '@ethersproject/bignumber';
 
 interface NFTContextProps {
   children: ReactNode;
@@ -20,6 +19,7 @@ type NFTContextData = {
   uploadToIPFS: (file: any) => Promise<string|undefined>;
   createNFT: (formInput: FormInput, fileUrl: string, router: NextRouter) => void;
   fetchNFTs: () => Promise<ItemMetadataProps[]>;
+  fetchMyNFTsOrListedNFTs: (type: string) => Promise<ItemMetadataProps[]>;
 };
 
 type FormInput = {
@@ -66,7 +66,7 @@ export const NFTProvider = ({ children }: NFTContextProps) => {
 
   const checkIfWalletIsConnected = async () => {
     if (!window.ethereum)
-      return alert('Please install MetaMask');
+      return /*alert('Please install MetaMask')*/;
 
     if (window.ethereum.request) {
       const accounts = await window.ethereum.request({
@@ -82,7 +82,7 @@ export const NFTProvider = ({ children }: NFTContextProps) => {
 
   const connectWallet = async () => {
     if (!window.ethereum)
-      return alert('Please install MetaMask');
+      return /*alert('Please install MetaMask')*/;
 
     if (window.ethereum.request) {
       const accounts = await window.ethereum.request({
@@ -126,7 +126,7 @@ export const NFTProvider = ({ children }: NFTContextProps) => {
 
       await router.push('/');
     } catch (error) {
-      console.log('Error uploading file to IPFS');
+      console.log('Error uploading file to IPFS', error);
     }
   };
 
@@ -148,7 +148,45 @@ export const NFTProvider = ({ children }: NFTContextProps) => {
   const fetchNFTs = async (): Promise<ItemMetadataProps[]> => {
     const provider = new ethers.providers.JsonRpcProvider();
     const contract = fetchContract(provider);
+    console.log(contract);
     const data = await contract.fetchMarketItems();
+
+    const items = await Promise.all(data.map(async ({ tokenId, seller, owner, price: unformattedPrice }: NFTItemProps) => {
+      const tokenURI = await contract.tokenURI(tokenId);
+      const {
+        data: {
+          name, description, image
+        }
+      } = await axios.get<ResponseMetadataProps>(tokenURI);
+      const price = ethers.utils.formatUnits(unformattedPrice.toString(), 'ether');
+
+      const itemMetadata: ItemMetadataProps = {
+        price,
+        tokenId: tokenId.toNumber(),
+        seller,
+        owner,
+        image,
+        name,
+        description,
+        tokenURI
+      };
+
+      return itemMetadata;
+    }));
+
+    return items;
+  };
+
+  const fetchMyNFTsOrListedNFTs = async (type: string): Promise<ItemMetadataProps[]> => {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    const contract = fetchContract(signer);
+
+    const data = type === 'fetchItemsListed'?
+      await contract.fetchItemsListed() :
+      await contract.fetchMyNFTs();
 
     const items = await Promise.all(data.map(async ({ tokenId, seller, owner, price: unformattedPrice }: NFTItemProps) => {
       const tokenURI = await contract.tokenURI(tokenId);
@@ -181,7 +219,7 @@ export const NFTProvider = ({ children }: NFTContextProps) => {
   }, []);
 
   return (
-    <NFTContext.Provider value={{ nftCurrency, connectWallet, currentAccount, uploadToIPFS, createNFT, fetchNFTs }}>
+    <NFTContext.Provider value={{ nftCurrency, connectWallet, currentAccount, uploadToIPFS, createNFT, fetchNFTs, fetchMyNFTsOrListedNFTs }}>
       {children}
     </NFTContext.Provider>
   );
