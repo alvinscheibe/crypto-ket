@@ -3,6 +3,8 @@ import Link from 'next/link';
 import Image, { StaticImageData } from 'next/image';
 import { useContext, useEffect, useState } from 'react';
 import { NFTContext } from '../../context/NFTContext';
+import { BigNumber } from 'ethers';
+import { shortenAddress } from '../../utils/shortenAddress';
 
 type NFTCardProps = {
   nft: {
@@ -11,8 +13,8 @@ type NFTCardProps = {
     seller: string;
     owner: string;
     description: string;
-    price: number;
-    image: StaticImageData;
+    price: string | number;
+    image: StaticImageData | string;
   }
 }
 
@@ -45,10 +47,12 @@ const NFTCard = ({ nft }: NFTCardProps) => {
           <p className={'font-poppins dark:text-white text-nft-black-1 font-semibold text-sm minlg:text-xl'}>{nft.name}</p>
           <div className={'flexBetween mt-1 minlg:mt-3 flex-row xs:flex-col xs:items-start xs:mt-3'}>
             <p className={'font-poppins dark:text-white text-nft-black-1 font-semibold text-xs minlg:text-lg'}>
-              {nft.price}&nbsp;
-              <span className={'normal'}>{nftCurrency}</span>
+              <>
+                {nft.price}&nbsp;
+                <span className={'normal'}>{nftCurrency}</span>
+              </>
             </p>
-            <p className={'font-poppins dark:text-white text-nft-black-1 font-semibold text-xs minlg:text-lg'}>{nft.seller}</p>
+            <p className={'font-poppins dark:text-white text-nft-black-1 font-semibold text-xs minlg:text-lg'}>{nft.seller.length > 10? shortenAddress(nft.seller) : nft.seller}</p>
           </div>
         </div>
       </div>

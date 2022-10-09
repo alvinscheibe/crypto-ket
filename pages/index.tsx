@@ -1,16 +1,26 @@
 import images from '../assets';
 import type { NextPage } from 'next';
 import { Banner, CreatorCard, Heading, NFTCard } from '../components';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import Image, { StaticImageData } from 'next/image';
 import { makeId } from '../utils/makeId';
 import { useTheme } from 'next-themes';
+import { ItemMetadataProps, NFTContext } from '../context/NFTContext';
 
 const Home: NextPage = () => {
   const parentRef = useRef(null);
   const scrollRef = useRef(null);
   const { theme } = useTheme();
   const [hideArrowButtons, setHideArrowButtons] = useState(false);
+  const [nfts, setNfts] = useState<ItemMetadataProps[]>([]);
+  const { fetchNFTs } = useContext(NFTContext);
+
+  useEffect(() => {
+    fetchNFTs().then((items) => {
+      console.log(items);
+      setNfts(items);
+    });
+  }, []);
 
   const handleScroll = (direction: string) => {
     const { current } = scrollRef;
@@ -91,6 +101,15 @@ const Home: NextPage = () => {
             <div>SearchBar</div>
           </div>
           <div className={'mt-3 w-full flex flex-wrap justify-start md:justify-center'}>
+            {nfts.map((nft) => <NFTCard key={nft.tokenId} nft={{
+              index: nft.tokenId,
+              name: nft.name,
+              price: nft.price,
+              seller: nft.seller,
+              owner: nft.owner,
+              description: nft.description,
+              image: nft.image
+            }} />)}
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => {
               //@ts-ignore
               const imageNFT: StaticImageData = images[`nft${item}`];

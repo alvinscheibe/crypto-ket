@@ -6,6 +6,8 @@ import { ethers } from 'ethers';
 import { MarketAddress, MarketAddressABI } from './constants';
 import { Signer } from '@ethersproject/abstract-signer';
 import { Provider } from '@ethersproject/abstract-provider';
+import axios from 'axios';
+import { BigNumber } from '@ethersproject/bignumber';
 
 interface NFTContextProps {
   children: ReactNode;
@@ -17,13 +19,42 @@ type NFTContextData = {
   currentAccount: string;
   uploadToIPFS: (file: any) => Promise<string|undefined>;
   createNFT: (formInput: FormInput, fileUrl: string, router: NextRouter) => void;
+  fetchNFTs: () => Promise<ItemMetadataProps[]>;
 };
 
 type FormInput = {
   name: string;
   description: string;
   price: string;
-}
+};
+
+type NFTItemProps = {
+  tokenId: {
+    toNumber: () => number;
+  },
+  seller: string;
+  owner: string;
+  price: {
+    toString: () => string;
+  };
+};
+
+type ResponseMetadataProps = {
+  name: string;
+  description: string;
+  image: string;
+};
+
+export type ItemMetadataProps = {
+  price: string;
+  tokenId: number;
+  seller: string;
+  owner: string;
+  image: string;
+  name: string;
+  description: string;
+  tokenURI: string;
+};
 
 const fetchContract = (signerOrProvider: Signer | Provider) => new ethers.Contract(MarketAddress, MarketAddressABI, signerOrProvider);
 
@@ -112,17 +143,45 @@ export const NFTProvider = ({ children }: NFTContextProps) => {
     });
 
     await transaction.wait();
+  };
 
-    //console.log(await contract.getListingPrice());
+  const fetchNFTs = async (): Promise<ItemMetadataProps[]> => {
+    const provider = new ethers.providers.JsonRpcProvider();
+    const contract = fetchContract(provider);
+    const data = await contract.fetchMarketItems();
+
+    const items = await Promise.all(data.map(async ({ tokenId, seller, owner, price: unformattedPrice }: NFTItemProps) => {
+      const tokenURI = await contract.tokenURI(tokenId);
+      const {
+        data: {
+          name, description, image
+        }
+      } = await axios.get<ResponseMetadataProps>(tokenURI);
+      const price = ethers.utils.formatUnits(unformattedPrice.toString(), 'ether');
+
+      const itemMetadata: ItemMetadataProps = {
+        price,
+        tokenId: tokenId.toNumber(),
+        seller,
+        owner,
+        image,
+        name,
+        description,
+        tokenURI
+      };
+
+      return itemMetadata;
+    }));
+
+    return items;
   };
 
   useEffect(() => {
     checkIfWalletIsConnected();
-    //createSale('test', '0.025');
   }, []);
 
   return (
-    <NFTContext.Provider value={{ nftCurrency, connectWallet, currentAccount, uploadToIPFS, createNFT }}>
+    <NFTContext.Provider value={{ nftCurrency, connectWallet, currentAccount, uploadToIPFS, createNFT, fetchNFTs }}>
       {children}
     </NFTContext.Provider>
   );
