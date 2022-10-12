@@ -4,10 +4,11 @@ import { useContext, useEffect, useState } from 'react';
 import { NFTContext } from '../context/NFTContext';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { Button, Loader } from '../components';
+import { Button, Loader, Modal } from '../components';
 import { shortenAddress } from '../utils/shortenAddress';
+import PaymentBody from '../components/Modal/PaymentBody';
 
-type NFTProps = {
+export type NFTProps = {
   tokenId: string;
   name: string;
   description: string;
@@ -86,6 +87,16 @@ const NftDetails: NextPage = () => {
           ) : (<Button btnName={`Buy for ${nft.price} ${nftCurrency}`} classStyles={'mr-5 sm:mr-0 rounded-xl'} />)}
         </div>
       </div>
+
+      <Modal
+        header={'Check out'}
+        body={<PaymentBody nft={nft} nftCurrency={nftCurrency} />}
+        footer={(<div className={'flex flex-row sm:flex-col'}>
+          <Button btnName={'Checkout'} classStyles={'mr-5 sm:mr-0 rounded-xl'} handleClick={() => {}} />
+          <Button btnName={'Cancel'} classStyles={'rounded-xl'} handleClick={() => {}} />
+        </div>)}
+        handleClose={() => {}}
+      />
     </div>
   );
 }
