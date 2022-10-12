@@ -21,6 +21,7 @@ export type NFTProps = {
 const NftDetails: NextPage = () => {
   const { currentAccount, nftCurrency } = useContext(NFTContext);
   const [isLoading, setIsLoading] = useState(true);
+  const [paymentModal, setPaymentModal] = useState(false);
   const [nft, setNft] = useState<NFTProps>({
     tokenId: '',
     name: '',
@@ -84,19 +85,21 @@ const NftDetails: NextPage = () => {
             <p className={'font-poppins dark:text-white text-nft-black-1 text-base font-normal border border-gray p-2'}>
               You cannot by your own NFT
             </p>
-          ) : (<Button btnName={`Buy for ${nft.price} ${nftCurrency}`} classStyles={'mr-5 sm:mr-0 rounded-xl'} />)}
+          ) : (<Button btnName={`Buy for ${nft.price} ${nftCurrency}`} classStyles={'mr-5 sm:mr-0 rounded-xl'} handleClick={() => setPaymentModal(true)} />)}
         </div>
       </div>
 
-      <Modal
-        header={'Check out'}
-        body={<PaymentBody nft={nft} nftCurrency={nftCurrency} />}
-        footer={(<div className={'flex flex-row sm:flex-col'}>
-          <Button btnName={'Checkout'} classStyles={'mr-5 sm:mr-0 rounded-xl'} handleClick={() => {}} />
-          <Button btnName={'Cancel'} classStyles={'rounded-xl'} handleClick={() => {}} />
-        </div>)}
-        handleClose={() => {}}
-      />
+      {paymentModal && (
+        <Modal
+          header={'Check out'}
+          body={<PaymentBody nft={nft} nftCurrency={nftCurrency} />}
+          footer={(<div className={'flex flex-row sm:flex-col'}>
+            <Button btnName={'Checkout'} classStyles={'mr-5 sm:mr-0 rounded-xl'} handleClick={() => {}} />
+            <Button btnName={'Cancel'} classStyles={'rounded-xl'} handleClick={() => setPaymentModal(false)} />
+          </div>)}
+          handleClose={() => setPaymentModal(false)}
+        />
+      )}
     </div>
   );
 }
