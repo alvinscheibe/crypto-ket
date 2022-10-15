@@ -7,6 +7,7 @@ import { MarketAddress, MarketAddressABI } from './constants';
 import { Signer } from '@ethersproject/abstract-signer';
 import { Provider } from '@ethersproject/abstract-provider';
 import axios from 'axios';
+import { NFTProps } from '../pages/nft-details';
 
 interface NFTContextProps {
   children: ReactNode;
@@ -20,6 +21,7 @@ type NFTContextData = {
   createNFT: (formInput: FormInput, fileUrl: string, router: NextRouter) => void;
   fetchNFTs: () => Promise<ItemMetadataProps[]>;
   fetchMyNFTsOrListedNFTs: (type: string) => Promise<ItemMetadataProps[]>;
+  buyNFT: (nft: NFTProps) => void;
 };
 
 type FormInput = {
@@ -214,12 +216,27 @@ export const NFTProvider = ({ children }: NFTContextProps) => {
     return items;
   };
 
+  const buyNFT = async (nft: NFTProps) => {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    const contract = fetchContract(signer);
+
+    const price = ethers.utils.parseUnits(nft.price.toString(), 'ether');
+    console.log(price);
+
+    const transaction = await contract.createMarketSale(nft.tokenId, { value: price });
+
+    await transaction.wait();
+  };
+
   useEffect(() => {
     checkIfWalletIsConnected();
   }, []);
 
   return (
-    <NFTContext.Provider value={{ nftCurrency, connectWallet, currentAccount, uploadToIPFS, createNFT, fetchNFTs, fetchMyNFTsOrListedNFTs }}>
+    <NFTContext.Provider value={{ nftCurrency, connectWallet, currentAccount, uploadToIPFS, createNFT, fetchNFTs, fetchMyNFTsOrListedNFTs, buyNFT }}>
       {children}
     </NFTContext.Provider>
   );

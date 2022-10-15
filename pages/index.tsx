@@ -67,7 +67,7 @@ const Home: NextPage = () => {
           <Heading title={'Best creators'} />
           <div className={'relative flex-1 max-w-full flex mt-3'} ref={parentRef}>
             <div className={'flex flex-row w-max overflow-x-scroll no-scrollbar select-none'} ref={scrollRef}>
-              {[6, 7, 8, 9, 10].map((index) => {
+              {[3, 4, 5, 6, 7, 8, 9, 10].map((index) => {
                 //@ts-ignore
                 const imageCreator: StaticImageData = images[`creator${index}`];
 
